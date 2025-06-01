@@ -43,7 +43,7 @@ class UserTests(APITestCase):
         self.assertIn('refresh', response.data)
 
     def test_password_reset(self):
-        user = User.objects.create_user(
+        User.objects.create_user(
             email='test@example.com',
             first_name='Test',
             last_name='User',
