@@ -198,3 +198,22 @@ CACHES = {
 PASSWORD_RESET_TIMEOUT = 86400
 FRONTEND_URL = 'http://localhost:3000'
 SWAGGER_USE_COMPAT_RENDERERS = False
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'YuKDj@yandex.ru'
+EMAIL_HOST_PASSWORD = 'vbaiqmunrpflpkww'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
