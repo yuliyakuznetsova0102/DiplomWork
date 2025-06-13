@@ -3,7 +3,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-
 class UserRoles(models.TextChoices):
     USER = 'user', _('User')
     ADMIN = 'admin', _('Admin')
@@ -24,6 +23,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', UserRoles.ADMIN)
         return self.create_user(email, first_name, last_name, password, **extra_fields)
+
 
 class User(AbstractUser):
     username = None

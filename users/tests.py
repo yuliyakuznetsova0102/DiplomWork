@@ -47,7 +47,6 @@ class UserTests(APITestCase):
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
 
-
     def test_password_reset(self):
         "Тестирует процесс сброса пароля (отправка email)"
         User.objects.create_user(
