@@ -4,6 +4,7 @@ from users.models import User
 
 
 class Ad(models.Model):
+    "Модель объявления"
     title = models.CharField(_('title'), max_length=200)
     price = models.PositiveIntegerField(_('price'))
     description = models.TextField(_('description'), blank=True)
@@ -25,6 +26,7 @@ class Ad(models.Model):
 
 
 class Comment(models.Model):
+    "Модель комментария"
     text = models.TextField(_('text'))
     author = models.ForeignKey(
         User,

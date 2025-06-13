@@ -6,6 +6,7 @@ from .models import Ad, Comment
 
 
 class AdTests(APITestCase):
+    "Создает тестовых пользователей (обычного и админа), тестовое объявление и комментарий"
     def setUp(self):
         self.user = User.objects.create_user(
             email='user@example.com',
@@ -33,6 +34,9 @@ class AdTests(APITestCase):
         )
 
     def test_create_ad(self):
+        " Проверяет создание нового объявления"
+        initial_count = Ad.objects.count()
+
         url = reverse('ad-list')
         data = {
             'title': 'New Ad',
@@ -41,11 +45,13 @@ class AdTests(APITestCase):
         }
         self.client.force_authenticate(user=self.user)
         response = self.client.post(url, data, format='json')
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Ad.objects.count(), 2)
-        self.assertEqual(Ad.objects.last().title, 'New Ad')
+        self.assertEqual(Ad.objects.count(), initial_count + 1)
+        self.assertEqual(Ad.objects.latest('id').title, 'New Ad')
 
     def test_update_ad_by_owner(self):
+        "Проверяет обновление объявления владельцем"
         url = reverse('ad-detail', args=[self.ad.id])
         data = {'title': 'Updated Ad', 'price': 150, 'description': 'Updated description'}
         self.client.force_authenticate(user=self.user)
@@ -55,6 +61,7 @@ class AdTests(APITestCase):
         self.assertEqual(self.ad.title, 'Updated Ad')
 
     def test_update_ad_by_admin(self):
+        "Проверяет обновление объявления администратором"
         url = reverse('ad-detail', args=[self.ad.id])
         data = {'title': 'Admin Updated', 'price': 150, 'description': 'Admin updated description'}
         self.client.force_authenticate(user=self.admin)
@@ -64,32 +71,39 @@ class AdTests(APITestCase):
         self.assertEqual(self.ad.title, 'Admin Updated')
 
     def test_delete_ad_by_non_owner(self):
+        "Проверяет запрет удаления объявления не-владельцем"
         other_user = User.objects.create_user(
             email='other@example.com',
             first_name='Other',
             last_name='User',
             password='otherpass123'
         )
+
         url = reverse('ad-detail', args=[self.ad.id])
         self.client.force_authenticate(user=other_user)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_search_ads(self):
+        "Проверяет поиск объявлений по заголовку"
         Ad.objects.create(
             title='Another Ad',
             price=300,
             description='Another description',
             author=self.user
         )
+
         url = reverse('ad-list') + '?title=Another'
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['title'], 'Another Ad')
 
 
 class CommentTests(APITestCase):
+    "Cоздает тестовые данные"
     def setUp(self):
         self.user = User.objects.create_user(
             email='user@example.com',
@@ -117,6 +131,7 @@ class CommentTests(APITestCase):
         )
 
     def test_create_comment(self):
+        "Проверяет создание комментария"
         url = reverse('comment-list', args=[self.ad.id])
         data = {'text': 'New comment'}
         self.client.force_authenticate(user=self.user)
@@ -126,6 +141,7 @@ class CommentTests(APITestCase):
         self.assertEqual(Comment.objects.last().text, 'New comment')
 
     def test_update_comment_by_owner(self):
+        "Проверяет обновление комментария владельцем"
         url = reverse('comment-detail', args=[self.ad.id, self.comment.id])
         data = {'text': 'Updated comment'}
         self.client.force_authenticate(user=self.user)
@@ -135,6 +151,7 @@ class CommentTests(APITestCase):
         self.assertEqual(self.comment.text, 'Updated comment')
 
     def test_delete_comment_by_admin(self):
+        "Проверяет удаление комментария администратором"
         url = reverse('comment-detail', args=[self.ad.id, self.comment.id])
         self.client.force_authenticate(user=self.admin)
         response = self.client.delete(url)

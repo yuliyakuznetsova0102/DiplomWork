@@ -15,6 +15,7 @@ djangorestframework-simplejwt = "^5.5.0"
 dotenv = "^0.9.9"
 timedelta = "^2020.12.3"
 psycopg2 = "^2.9.10"
+pytest = "^8.4.0"
 
 
 [tool.poetry.group.lint.dependencies]
@@ -31,3 +32,10 @@ pytest-cov = "^6.1.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+testpaths = ["users", "ads"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
